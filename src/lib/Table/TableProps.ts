@@ -1,9 +1,12 @@
 import { TableProps as ChakraTableProps } from "@chakra-ui/react";
 
-export type TableRowData = Record<string, {
-  label: string | number | React.ReactNode;
-  isNumeric?: boolean;
-}>;
+export type TableRowData = Record<
+  string,
+  {
+    label: string | number | React.ReactNode;
+    isNumeric?: boolean;
+  }
+>;
 
 type TableStyleProps = ChakraTableProps;
 
@@ -14,7 +17,7 @@ type TableProps = {
   }[];
   expandableColumn?: string;
   rows: TableRowData[];
-  style?: TableStyleProps
+  style?: TableStyleProps;
 };
 
-export default TableProps
+export default TableProps;

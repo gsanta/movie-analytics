@@ -9,10 +9,11 @@ type TableRowProps = {
   visibleColumns: TableProps["headers"];
 };
 
-function TableRow({ expandableColumn, visibleColumns, fields}: TableRowProps) {
+function TableRow({ expandableColumn, visibleColumns, fields }: TableRowProps) {
   const [isExpended, setIsExpanded] = useState(false);
   const styles = useMultiStyleConfig("DataTable");
-  const hasExpandableContent = expandableColumn && fields[expandableColumn].label;
+  const hasExpandableContent =
+    expandableColumn && fields[expandableColumn].label;
 
   return (
     <>
@@ -22,18 +23,25 @@ function TableRow({ expandableColumn, visibleColumns, fields}: TableRowProps) {
             <IconButton
               aria-label="Expand"
               colorScheme="yellow"
-              icon={<TriangleDownIcon 
-                transform={isExpended ? 'rotate(-180deg)' : 'rotate(0deg)'}
-                transition="300ms"
-              />}
+              icon={
+                <TriangleDownIcon
+                  transform={isExpended ? "rotate(-180deg)" : "rotate(0deg)"}
+                  transition="300ms"
+                />
+              }
               onClick={() => setIsExpanded(!isExpended)}
               size="sm"
-              variant='ghost'
+              variant="ghost"
             />
           )}
         </Box>
         {visibleColumns.map(({ key: headerKey }) => (
-          <Box as="td" key={headerKey} __css={styles.td} textAlign={fields[headerKey].isNumeric ? 'right' : 'left'}>
+          <Box
+            as="td"
+            key={headerKey}
+            __css={styles.td}
+            textAlign={fields[headerKey].isNumeric ? "right" : "left"}
+          >
             {fields[headerKey].label}
           </Box>
         ))}
@@ -52,6 +60,5 @@ function TableRow({ expandableColumn, visibleColumns, fields}: TableRowProps) {
     </>
   );
 }
-
 
 export default TableRow;
