@@ -7,7 +7,7 @@ import { ColumnStates } from "./useToggleColumns";
 type TableRowProps = {
   columnStates: ColumnStates;
   expandableColumn?: string;
-  fields: TableRowData;
+  row: TableRowData;
   visibleHeaders: TableProps["headers"];
 };
 
@@ -15,12 +15,13 @@ function TableRow({
   columnStates,
   expandableColumn,
   visibleHeaders,
-  fields,
+  row,
 }: TableRowProps) {
   const [isExpended, setIsExpanded] = useState(false);
   const styles = useMultiStyleConfig("DataTable");
+  const { columns } = row;
   const hasExpandableContent =
-    expandableColumn && fields[expandableColumn]?.label;
+    expandableColumn && columns[expandableColumn]?.label;
 
   return (
     <>
@@ -52,21 +53,21 @@ function TableRow({
                 ? "fade"
                 : ""
             }
-            textAlign={fields[headerKey].isNumeric ? "right" : "left"}
+            textAlign={columns[headerKey].isNumeric ? "right" : "left"}
           >
-            {fields[headerKey].label}
+            {columns[headerKey].label}
           </Box>
         ))}
       </Box>
       {hasExpandableContent && isExpended && (
-        <Box as="tr">
+        <Box as="tr" key={`${row.key}-expandable`}>
           <Box
             as="td"
             colSpan={visibleHeaders.length + 1}
             __css={styles.expandableTd}
           >
             <Card padding="1rem" variant="filled">
-              {fields[expandableColumn].label}
+              {columns[expandableColumn].label}
             </Card>
           </Box>
         </Box>

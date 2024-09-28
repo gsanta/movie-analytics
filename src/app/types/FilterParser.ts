@@ -7,6 +7,6 @@ export type FilterResult = {
   errorMessage?: string;
 };
 
-type SearchFilterParser = (filter: string) => Promise<FilterResult>;
+type FilterParser = (filter: string) => Promise<FilterResult>;
 
-export default SearchFilterParser;
+export default FilterParser;

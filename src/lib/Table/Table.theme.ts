@@ -1,12 +1,12 @@
 import { createMultiStyleConfigHelpers, keyframes } from "@chakra-ui/react";
 
 const helpers = createMultiStyleConfigHelpers([
-  "th",
+  "expandableTd",
+  "table",
   "td",
+  "th",
   "thead",
   "tr",
-  "table",
-  "expandableTd",
 ]);
 
 const fade = keyframes`
@@ -18,17 +18,14 @@ const fade = keyframes`
   }
 `;
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
-
 const Table = helpers.defineMultiStyleConfig({
   baseStyle: {
+    table: {
+      borderCollapse: "collapse",
+      borderSpacing: "0",
+      display: "table",
+      tableLayout: "fixed",
+    },
     th: {
       bgColor: "yellow.500",
       _first: {
@@ -77,7 +74,6 @@ const Table = helpers.defineMultiStyleConfig({
       borderRightColor: "gray.200",
       padding: "0.5rem",
     },
-    table: {},
     tr: {
       _last: {
         td: {

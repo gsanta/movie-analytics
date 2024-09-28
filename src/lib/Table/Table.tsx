@@ -1,10 +1,52 @@
-import React, { useMemo, useState } from "react";
-import { Box, useMultiStyleConfig } from "@chakra-ui/react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Box, Card, useMultiStyleConfig } from "@chakra-ui/react";
 import TablePagination from "./TablePagination";
 import TableProps from "./TableProps";
 import TableRow from "./TableRow";
 import ColumnToggler from "./ColumnToggler";
 import useToggleColumns from "./useToggleColumns";
+
+function Headers({
+  expandableColumn,
+  realHeaders,
+}: {
+  expandableColumn?: string;
+  realHeaders: {
+    key: string;
+    label?: string;
+  }[];
+}) {
+  const styles = useMultiStyleConfig("DataTable");
+
+  return (
+    <tr>
+      {expandableColumn && <Box as="th" __css={styles.th} width="4rem" />}
+      {realHeaders.map((column) => (
+        <Box as="th" __css={styles.th} key={column.key}>
+          {column.label}
+        </Box>
+      ))}
+    </tr>
+  );
+}
+
+function EmptyState({ colSpan }: { colSpan: number }) {
+  return (
+    <Box as="tr">
+      <Box as="td" colSpan={colSpan}>
+        <Card
+          bgColor="gray.200"
+          fontWeight="bold"
+          margin="0.5rem"
+          padding="1rem"
+          textAlign="center"
+        >
+          The table is empty.
+        </Card>
+      </Box>
+    </Box>
+  );
+}
 
 function Table({
   defaultVisibleColumns,
@@ -19,19 +61,23 @@ function Table({
   const itemsPerPage = 20;
   const [page, setPage] = useState(0);
 
-  const visibleRows = useMemo(
-    () => rows.slice(page * itemsPerPage, page * itemsPerPage + itemsPerPage),
-    [page, rows],
-  );
+  useEffect(() => {
+    setPage(0);
+  }, [rows]);
 
-  const { columnStates, toggleColumn, visibleColumns } = useToggleColumns(
+  const { columnStates, toggleColumns, visibleColumns } = useToggleColumns(
     headers,
     defaultVisibleColumns,
   );
 
-  const visibleHeaders = headers.filter(
+  const realHeaders = headers.filter(
     (header) =>
       header.key !== expandableColumn && visibleColumns.includes(header.key),
+  );
+
+  const pageRows = useMemo(
+    () => rows.slice(page * itemsPerPage, page * itemsPerPage + itemsPerPage),
+    [page, rows],
   );
 
   return (
@@ -44,49 +90,41 @@ function Table({
       >
         <Box paddingTop="0.2rem">
           <ColumnToggler
-            columns={headers}
+            columns={headers.filter(
+              (header) => header.key !== expandableColumn,
+            )}
             columnStates={columnStates}
-            toggleColumn={toggleColumn}
-            visibleColumns={visibleColumns}
+            toggleColumns={toggleColumns}
+            visibleColumns={visibleColumns.filter(
+              (column) => column !== expandableColumn,
+            )}
           />
         </Box>
         {filter}
       </Box>
       <Box overflowX="auto">
-        <Box
-          as="table"
-          style={{
-            borderCollapse: "collapse",
-            borderSpacing: "0",
-            display: "table",
-            tableLayout: "fixed",
-          }}
-          __css={styles.table}
-          {...style}
-        >
+        <Box as="table" __css={styles.table} {...style}>
           <Box as="thead" __css={styles.thead}>
-            <tr>
-              {expandableColumn && (
-                <Box as="th" __css={styles.th} width="4rem" />
-              )}
-              {visibleHeaders.map((column) => (
-                <Box as="th" __css={styles.th}>
-                  {column.label}
-                </Box>
-              ))}
-            </tr>
+            <Headers
+              expandableColumn={expandableColumn}
+              realHeaders={realHeaders}
+            />
           </Box>
           <tbody>
-            {visibleRows.map((fields) => (
+            {rows.length === 0 && (
+              <EmptyState colSpan={realHeaders.length + 1} />
+            )}
+            {pageRows.map((row) => (
               <TableRow
-                expandableColumn={expandableColumn}
-                fields={fields}
                 columnStates={columnStates}
-                visibleHeaders={visibleHeaders}
+                expandableColumn={expandableColumn}
+                key={row.key}
+                row={row}
+                visibleHeaders={realHeaders}
               />
             ))}
             <TablePagination
-              colsPan={visibleHeaders.length + 1}
+              colsPan={realHeaders.length + 1}
               itemCount={rows.length}
               itemsPerPage={itemsPerPage}
               page={page}

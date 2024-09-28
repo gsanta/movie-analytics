@@ -1,13 +1,16 @@
 import { TableProps as ChakraTableProps } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
-export type TableRowData = Record<
-  string,
-  {
-    label: string | number | React.ReactNode;
-    isNumeric?: boolean;
-  }
->;
+export type TableRowData = {
+  columns: Record<
+    string,
+    {
+      isNumeric?: boolean;
+      label: string | number | React.ReactNode;
+    }
+  >;
+  key: string;
+};
 
 type TableStyleProps = ChakraTableProps;
 

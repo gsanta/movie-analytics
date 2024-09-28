@@ -20,20 +20,35 @@ type ColumnRevealerProps = {
     label?: string;
   }[];
   columnStates: ColumnStates;
-  toggleColumn(column: string): void;
+  toggleColumns(column: string[], newState: "visible" | "hidden"): void;
   visibleColumns: string[];
 };
 
 function ColumnToggler({
   columns,
   columnStates,
-  toggleColumn,
+  toggleColumns,
   visibleColumns,
 }: ColumnRevealerProps) {
-  const handleHideAll = () => toggleColumn([columns[0].key][0]);
+  const handleHideAll = () => {
+    toggleColumns(
+      columns.slice(1).map((column) => column.key),
+      "hidden",
+    );
+    toggleColumns([columns[0].key], "visible");
+  };
 
   const handleShowAll = () =>
-    toggleColumn(columns.map((column) => column.key)[0]);
+    toggleColumns(
+      columns.map((column) => column.key),
+      "visible",
+    );
+
+  const handleToggleColumn = (column: string) =>
+    toggleColumns(
+      [column],
+      visibleColumns.includes(column) ? "hidden" : "visible",
+    );
 
   return (
     <Popover placement="bottom-end">
@@ -76,7 +91,7 @@ function ColumnToggler({
           />
           {columns.map((column) => {
             return (
-              <Box display="flex" gap="1rem">
+              <Box display="flex" gap="1rem" key={column.key}>
                 <Switch
                   colorScheme="yellow"
                   disabled={
@@ -87,7 +102,7 @@ function ColumnToggler({
                   isChecked={["visible", "fadeIn"].includes(
                     columnStates[column.key],
                   )}
-                  onChange={() => toggleColumn(column.key)}
+                  onChange={() => handleToggleColumn(column.key)}
                 />
                 <FormLabel htmlFor={`isChecked-${column.key}`}>
                   {column.label}

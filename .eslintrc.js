@@ -16,5 +16,17 @@ module.exports = {
     ],
     "react/jsx-props-no-spreading": "off",
     "react/require-default-props": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        ignoreRestSiblings: true,
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        ignoreRestSiblings: true,
+      },
+    ],
   },
 };

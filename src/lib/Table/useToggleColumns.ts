@@ -4,24 +4,26 @@ export type ColumnState = "visible" | "fadeOut" | "fadeIn" | "hidden";
 
 export type ColumnStates = Record<string, ColumnState>;
 
-function reducer(
+function columnStatesReducer(
   state: Record<string, ColumnState>,
-  action: { column: string; newState: ColumnState },
+  action: { column: string; newState: ColumnState }[],
 ) {
   const newState = { ...state };
-  newState[action.column] = action.newState;
+  action.forEach((item) => {
+    newState[item.column] = item.newState;
+  });
 
   return newState;
 }
 
 const useToggleColumns = (
-  columns: {
+  headers: {
     key: string;
     label?: string;
   }[],
   defaultVisibleColumns: string[],
 ) => {
-  const initialState = columns.reduce<Record<string, ColumnState>>(
+  const initialColumnStates = headers.reduce<Record<string, ColumnState>>(
     (state, nextColumn) => {
       return {
         ...state,
@@ -33,41 +35,37 @@ const useToggleColumns = (
     {},
   );
 
-  const [columnStates, dispatchColumnState] = useReducer(reducer, initialState);
+  const [columnStates, dispatchColumnState] = useReducer(
+    columnStatesReducer,
+    initialColumnStates,
+  );
 
   const visibleColumns = useMemo(() => {
-    return columns
+    return headers
       .filter((column) => columnStates[column.key] !== "hidden")
       .map((column) => column.key);
-  }, [columnStates, columns]);
+  }, [columnStates, headers]);
 
-  const toggleColumn = useCallback(
-    (column: string) => {
-      if (["visible", "hidden"].includes(columnStates[column])) {
-        if (columnStates[column] === "visible") {
-          dispatchColumnState({
+  const toggleColumns = useCallback(
+    (toggledColumns: string[], newState: "visible" | "hidden") => {
+      const fadingStates: Parameters<typeof columnStatesReducer>[1] = [];
+      const finalStates: Parameters<typeof columnStatesReducer>[1] = [];
+
+      toggledColumns.forEach((column) => {
+        if (["visible", "hidden"].includes(columnStates[column])) {
+          fadingStates.push({
             column,
-            newState: "fadeOut",
+            newState: newState === "visible" ? "fadeIn" : "fadeOut",
           });
-          setTimeout(() => {
-            dispatchColumnState({
-              column,
-              newState: "hidden",
-            });
-          }, 500);
-        } else {
-          dispatchColumnState({
+          finalStates.push({
             column,
-            newState: "fadeIn",
+            newState,
           });
-          setTimeout(() => {
-            dispatchColumnState({
-              column,
-              newState: "visible",
-            });
-          }, 500);
         }
-      }
+      });
+
+      dispatchColumnState(fadingStates);
+      setTimeout(() => dispatchColumnState(finalStates), 500);
     },
     [columnStates],
   );
@@ -75,7 +73,7 @@ const useToggleColumns = (
   return {
     columnStates,
     visibleColumns,
-    toggleColumn,
+    toggleColumns,
   };
 };
 

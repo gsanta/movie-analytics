@@ -1,4 +1,4 @@
-import SearchFilterParser, { FilterResult } from "../types/SearchFilterParser";
+import FilterParser, { FilterResult } from "../types/FilterParser";
 
 const validatorRegex = /^(?:(?:"[^"]*"|\s*(=|=~|AND)\s*)*)$/;
 // Regex to match AND that is not within quotes
@@ -33,7 +33,7 @@ const parseKeyValuePairs = (part: string) => {
   throw new Error("parse failed");
 };
 
-const parseExpressionSearchFilter: SearchFilterParser = (
+const parseExpressionFilter: FilterParser = (
   filter: string,
 ): Promise<FilterResult> => {
   const filterResults: FilterResult = {
@@ -41,7 +41,7 @@ const parseExpressionSearchFilter: SearchFilterParser = (
   };
 
   if (!validatorRegex.test(filter)) {
-    filterResults.errorMessage = "filter is invalid";
+    filterResults.errorMessage = "Filter is invalid.";
   }
 
   try {
@@ -49,10 +49,10 @@ const parseExpressionSearchFilter: SearchFilterParser = (
       ? filter.split(andRegex).map(parseKeyValuePairs)
       : [];
   } catch {
-    filterResults.errorMessage = "filter is invalid";
+    filterResults.errorMessage = "Filter is invalid.";
   }
 
   return Promise.resolve(filterResults);
 };
 
-export default parseExpressionSearchFilter;
+export default parseExpressionFilter;

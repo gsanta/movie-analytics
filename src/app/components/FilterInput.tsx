@@ -8,21 +8,25 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import SearchFilterParser, { FilterResult } from "../types/SearchFilterParser";
+import FilterParser, { FilterResult } from "../types/FilterParser";
 
-export type StringFilterProps = {
-  parser: SearchFilterParser;
-  onSearch(filterResult: FilterResult): void;
+export type FilterInputProps = {
+  parser: FilterParser;
+  onFilter(filterResult: FilterResult): void;
+  placeholder: string;
 };
 
-function StringFilter({ parser, onSearch }: StringFilterProps) {
+function FilterInput({ parser, onFilter, placeholder }: FilterInputProps) {
   const [value, setValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
+    setIsLoading(true);
     const result = await parser(value);
-    onSearch(result);
+    onFilter(result);
     setErrorMessage(result.errorMessage || "");
+    setIsLoading(false);
   };
 
   return (
@@ -31,7 +35,7 @@ function StringFilter({ parser, onSearch }: StringFilterProps) {
         <Input
           focusBorderColor="yellow.500"
           onChange={(e) => setValue(e.target.value)}
-          placeholder="Enter filter"
+          placeholder={placeholder}
           value={value}
         />
         <InputRightElement width="3rem">
@@ -39,6 +43,7 @@ function StringFilter({ parser, onSearch }: StringFilterProps) {
             aria-label="Filter"
             colorScheme="yellow"
             icon={<SearchIcon />}
+            isLoading={isLoading}
             onClick={handleSearch}
             size="sm"
             variant="outline"
@@ -50,4 +55,4 @@ function StringFilter({ parser, onSearch }: StringFilterProps) {
   );
 }
 
-export default StringFilter;
+export default FilterInput;

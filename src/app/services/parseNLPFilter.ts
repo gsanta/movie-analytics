@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import SearchFilterParser, { FilterResult } from "../types/SearchFilterParser";
-import parseExpressionSearchFilter from "./parseExpressionSearchFilter";
+import FilterParser, { FilterResult } from "../types/FilterParser";
+import parseExpressionFilter from "./parseExpressionFilter";
 
 const openAIClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -33,14 +33,19 @@ The available column names:
 - Actor 3
 
 Answer with the generated filter.
+If no filter can be generated, answer with "null"
 
 The search query that needs to be parsed and a filter string generated for: ${query}
 
 `;
 
-const parseNLPSearchFilter: SearchFilterParser = async (
+const parseNLPFilter: FilterParser = async (
   filter: string,
 ): Promise<FilterResult> => {
+  if (!filter) {
+    return parseExpressionFilter("");
+  }
+
   const chatCompletion = await openAIClient.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
@@ -51,9 +56,16 @@ const parseNLPSearchFilter: SearchFilterParser = async (
     ],
   });
 
-  return parseExpressionSearchFilter(
-    chatCompletion.choices[0]?.message?.content || "",
-  );
+  const answer = chatCompletion.choices[0]?.message?.content;
+
+  if (answer === "null") {
+    return Promise.resolve({
+      filters: [],
+      errorMessage: "Failed to parse text.",
+    });
+  }
+
+  return parseExpressionFilter(answer || "");
 };
 
-export default parseNLPSearchFilter;
+export default parseNLPFilter;
