@@ -1,4 +1,4 @@
-import { createMultiStyleConfigHelpers } from "@chakra-ui/react";
+import { createMultiStyleConfigHelpers, keyframes } from "@chakra-ui/react";
 
 const helpers = createMultiStyleConfigHelpers([
   "th",
@@ -8,6 +8,24 @@ const helpers = createMultiStyleConfigHelpers([
   "table",
   "expandableTd",
 ]);
+
+const fade = keyframes`
+  0% {
+    background-color: rgba(214, 158, 46, 1);
+  }
+  100% {
+    background-color: rgba(214, 158, 46, 0);
+  }
+`;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 
 const Table = helpers.defineMultiStyleConfig({
   baseStyle: {
@@ -47,6 +65,9 @@ const Table = helpers.defineMultiStyleConfig({
       _last: {
         borderRight: "1px",
         borderRightColor: "gray.200",
+      },
+      "&.fade": {
+        animation: `${fade} 0.8s`,
       },
     },
     expandableTd: {

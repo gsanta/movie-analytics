@@ -12,33 +12,28 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import React from "react";
+import { ColumnStates } from "./useToggleColumns";
 
 type ColumnRevealerProps = {
   columns: {
     key: string;
     label?: string;
   }[];
-  setVisibleColumns(columns: string[]): void;
+  columnStates: ColumnStates;
+  toggleColumn(column: string): void;
   visibleColumns: string[];
 };
 
-function ColumnRevealer({
+function ColumnToggler({
   columns,
-  setVisibleColumns,
+  columnStates,
+  toggleColumn,
   visibleColumns,
 }: ColumnRevealerProps) {
-  const handleToggleColumn = (newColumn: string) => {
-    setVisibleColumns(
-      visibleColumns.includes(newColumn)
-        ? visibleColumns.filter((column) => newColumn !== column)
-        : [...visibleColumns, newColumn],
-    );
-  };
-
-  const handleHideAll = () => setVisibleColumns([columns[0].key]);
+  const handleHideAll = () => toggleColumn([columns[0].key][0]);
 
   const handleShowAll = () =>
-    setVisibleColumns(columns.map((column) => column.key));
+    toggleColumn(columns.map((column) => column.key)[0]);
 
   return (
     <Popover placement="bottom-end">
@@ -89,8 +84,10 @@ function ColumnRevealer({
                     visibleColumns.includes(column.key)
                   }
                   id={`isChecked-${column.key}`}
-                  isChecked={visibleColumns.includes(column.key)}
-                  onChange={() => handleToggleColumn(column.key)}
+                  isChecked={["visible", "fadeIn"].includes(
+                    columnStates[column.key],
+                  )}
+                  onChange={() => toggleColumn(column.key)}
                 />
                 <FormLabel htmlFor={`isChecked-${column.key}`}>
                   {column.label}
@@ -104,4 +101,4 @@ function ColumnRevealer({
   );
 }
 
-export default ColumnRevealer;
+export default ColumnToggler;

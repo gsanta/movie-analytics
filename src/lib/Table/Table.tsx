@@ -3,7 +3,8 @@ import { Box, useMultiStyleConfig } from "@chakra-ui/react";
 import TablePagination from "./TablePagination";
 import TableProps from "./TableProps";
 import TableRow from "./TableRow";
-import ColumnRevealer from "./ColumnRevealer";
+import ColumnToggler from "./ColumnToggler";
+import useToggleColumns from "./useToggleColumns";
 
 function Table({
   defaultVisibleColumns,
@@ -17,16 +18,20 @@ function Table({
 
   const itemsPerPage = 20;
   const [page, setPage] = useState(0);
-  const [visibleColumns, setVisibleColumns] = useState(defaultVisibleColumns);
-
-  const visibleHeaders = headers.filter(
-    (header) =>
-      header.key !== expandableColumn && visibleColumns.includes(header.key),
-  );
 
   const visibleRows = useMemo(
     () => rows.slice(page * itemsPerPage, page * itemsPerPage + itemsPerPage),
     [page, rows],
+  );
+
+  const { columnStates, toggleColumn, visibleColumns } = useToggleColumns(
+    headers,
+    defaultVisibleColumns,
+  );
+
+  const visibleHeaders = headers.filter(
+    (header) =>
+      header.key !== expandableColumn && visibleColumns.includes(header.key),
   );
 
   return (
@@ -38,9 +43,10 @@ function Table({
         gap="1rem"
       >
         <Box paddingTop="0.2rem">
-          <ColumnRevealer
+          <ColumnToggler
             columns={headers}
-            setVisibleColumns={setVisibleColumns}
+            columnStates={columnStates}
+            toggleColumn={toggleColumn}
             visibleColumns={visibleColumns}
           />
         </Box>
@@ -75,6 +81,7 @@ function Table({
               <TableRow
                 expandableColumn={expandableColumn}
                 fields={fields}
+                columnStates={columnStates}
                 visibleHeaders={visibleHeaders}
               />
             ))}
