@@ -15,6 +15,7 @@ type TableProps = {
     key: string;
     label?: string;
   }[];
+  defaultVisibleColumns: string[];
   expandableColumn?: string;
   rows: TableRowData[];
   style?: TableStyleProps;

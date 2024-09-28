@@ -4,6 +4,7 @@ import dataset from "../dataset.csv";
 import Table from "./lib/Table/Table";
 import theme from "./lib/theme";
 import TableProps, { TableRowData } from "./lib/Table/TableProps";
+import ColumnRevealer from "./lib/Table/ColumnRevealer";
 
 function isValidNumber(str: string) {
   return !Number.isNaN(parseFloat(str));
@@ -37,14 +38,18 @@ function App() {
         alignItems="center"
         display="flex"
         flexDir="column"
+        gap="1rem"
         style={{ padding: "20px", height: "500px" }}
       >
-        <Table
-          expandableColumn="Fun Facts"
-          headers={headers}
-          rows={rows}
-          style={{ width: "120rem" }}
-        />
+        <Box display="flex" flexDir="column" gap="1rem">
+          <Table
+            defaultVisibleColumns={headers.map((header) => header.key)}
+            expandableColumn="Fun Facts"
+            headers={headers}
+            rows={rows}
+            style={{ width: "120rem" }}
+          />
+        </Box>
       </Box>
     </ChakraBaseProvider>
   );

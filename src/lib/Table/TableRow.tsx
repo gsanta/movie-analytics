@@ -6,10 +6,10 @@ import TableProps, { TableRowData } from "./TableProps";
 type TableRowProps = {
   expandableColumn?: string;
   fields: TableRowData;
-  visibleColumns: TableProps["headers"];
+  visibleHeaders: TableProps["headers"];
 };
 
-function TableRow({ expandableColumn, visibleColumns, fields }: TableRowProps) {
+function TableRow({ expandableColumn, visibleHeaders, fields }: TableRowProps) {
   const [isExpended, setIsExpanded] = useState(false);
   const styles = useMultiStyleConfig("DataTable");
   const hasExpandableContent =
@@ -35,7 +35,7 @@ function TableRow({ expandableColumn, visibleColumns, fields }: TableRowProps) {
             />
           )}
         </Box>
-        {visibleColumns.map(({ key: headerKey }) => (
+        {visibleHeaders.map(({ key: headerKey }) => (
           <Box
             as="td"
             key={headerKey}
@@ -50,7 +50,7 @@ function TableRow({ expandableColumn, visibleColumns, fields }: TableRowProps) {
         <Box as="tr">
           <Box
             as="td"
-            colSpan={visibleColumns.length + 1}
+            colSpan={visibleHeaders.length + 1}
             __css={styles.expandableTd}
           >
             {fields[expandableColumn].label}
