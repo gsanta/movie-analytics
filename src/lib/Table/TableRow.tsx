@@ -1,5 +1,5 @@
 import { TriangleDownIcon } from "@chakra-ui/icons";
-import { useMultiStyleConfig, Box, IconButton } from "@chakra-ui/react";
+import { useMultiStyleConfig, Box, IconButton, Card } from "@chakra-ui/react";
 import React, { useState } from "react";
 import TableProps, { TableRowData } from "./TableProps";
 
@@ -13,7 +13,7 @@ function TableRow({ expandableColumn, visibleHeaders, fields }: TableRowProps) {
   const [isExpended, setIsExpanded] = useState(false);
   const styles = useMultiStyleConfig("DataTable");
   const hasExpandableContent =
-    expandableColumn && fields[expandableColumn].label;
+    expandableColumn && fields[expandableColumn]?.label;
 
   return (
     <>
@@ -53,7 +53,9 @@ function TableRow({ expandableColumn, visibleHeaders, fields }: TableRowProps) {
             colSpan={visibleHeaders.length + 1}
             __css={styles.expandableTd}
           >
-            {fields[expandableColumn].label}
+            <Card padding="1rem" variant="filled">
+              {fields[expandableColumn].label}
+            </Card>
           </Box>
         </Box>
       )}

@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: './src/index.tsx',
@@ -32,7 +33,8 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html'
-    })
+    }),
+    new Dotenv(),
   ],
   devServer: {
     static: {
@@ -41,6 +43,6 @@ module.exports = {
     open: true,
     port: 3011
   },
-  devtool: 'source-map',
+  devtool: 'cheap-module-source-map',
   mode: 'development'
 };

@@ -50,7 +50,11 @@ function ColumnRevealer({
           size="sm"
         />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent
+        borderLeftWidth="2px"
+        borderLeftColor="yellow.500"
+        borderBottomColor="yellow.500"
+      >
         <PopoverBody>
           <Box display="flex" justifyContent="space-between">
             <Button

@@ -8,59 +8,19 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-
-export type FilterResult = {
-  filters: {
-    column: string;
-    value: string;
-    isExact: boolean;
-  }[];
-  errorMessage?: string;
-};
-
-const parseFilter = (filter: string): FilterResult => {
-  const validatorRegex = /^(?:(?:"[^"]*"|\s*(=|=~|AND)\s*)*)$/;
-
-  const filterResults: FilterResult = {
-    filters: [],
-  };
-
-  if (!validatorRegex.test(filter)) {
-    filterResults.errorMessage = "filter is invalid";
-  }
-
-  // Regex to match AND that is not within quotes
-  const regexAnd = /\sAND\s(?=(?:[^"]*"[^"]*")*[^"]*$)/;
-
-  const regexExact = /"([^"]+)"\s*=\s*"([^"]+)"/;
-
-  filter.split(regexAnd).forEach((part) => {
-    const match = part.match(regexExact);
-
-    if (match) {
-      const column = match[1];
-      const value = match[2];
-      filterResults.filters.push({
-        column,
-        value,
-        isExact: true,
-      });
-    }
-  });
-
-  return filterResults;
-};
+import SearchFilterParser, { FilterResult } from "../types/SearchFilterParser";
 
 export type StringFilterProps = {
+  parser: SearchFilterParser;
   onSearch(filterResult: FilterResult): void;
 };
 
-function StringFilter({ onSearch }: StringFilterProps) {
+function StringFilter({ parser, onSearch }: StringFilterProps) {
   const [value, setValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSearch = () => {
-    const result = parseFilter(value);
+  const handleSearch = async () => {
+    const result = await parser(value);
     onSearch(result);
     setErrorMessage(result.errorMessage || "");
   };

@@ -30,7 +30,7 @@ function Table({
   );
 
   return (
-    <>
+    <Box display="flex" flexDir="column" gap="1rem">
       <Box
         alignItems="flex-start"
         display="flex"
@@ -46,45 +46,49 @@ function Table({
         </Box>
         {filter}
       </Box>
-      <Box
-        as="table"
-        style={{
-          borderCollapse: "collapse",
-          borderSpacing: "0",
-          display: "table",
-          tableLayout: "fixed",
-        }}
-        __css={styles.table}
-        {...style}
-      >
-        <Box as="thead" __css={styles.thead}>
-          <tr>
-            {expandableColumn && <Box as="th" __css={styles.th} width="4rem" />}
-            {visibleHeaders.map((column) => (
-              <Box as="th" __css={styles.th}>
-                {column.label}
-              </Box>
+      <Box overflowX="auto">
+        <Box
+          as="table"
+          style={{
+            borderCollapse: "collapse",
+            borderSpacing: "0",
+            display: "table",
+            tableLayout: "fixed",
+          }}
+          __css={styles.table}
+          {...style}
+        >
+          <Box as="thead" __css={styles.thead}>
+            <tr>
+              {expandableColumn && (
+                <Box as="th" __css={styles.th} width="4rem" />
+              )}
+              {visibleHeaders.map((column) => (
+                <Box as="th" __css={styles.th}>
+                  {column.label}
+                </Box>
+              ))}
+            </tr>
+          </Box>
+          <tbody>
+            {visibleRows.map((fields) => (
+              <TableRow
+                expandableColumn={expandableColumn}
+                fields={fields}
+                visibleHeaders={visibleHeaders}
+              />
             ))}
-          </tr>
-        </Box>
-        <tbody>
-          {visibleRows.map((fields) => (
-            <TableRow
-              expandableColumn={expandableColumn}
-              fields={fields}
-              visibleHeaders={visibleHeaders}
+            <TablePagination
+              colsPan={visibleHeaders.length + 1}
+              itemCount={rows.length}
+              itemsPerPage={itemsPerPage}
+              page={page}
+              setPage={setPage}
             />
-          ))}
-          <TablePagination
-            colsPan={visibleHeaders.length + 1}
-            itemCount={rows.length}
-            itemsPerPage={itemsPerPage}
-            page={page}
-            setPage={setPage}
-          />
-        </tbody>
+          </tbody>
+        </Box>
       </Box>
-    </>
+    </Box>
   );
 }
 

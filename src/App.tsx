@@ -1,47 +1,22 @@
-import React, { useState } from "react";
-import { Box, ChakraBaseProvider } from "@chakra-ui/react";
+import React from "react";
+import { Box, ChakraBaseProvider, Checkbox, Divider } from "@chakra-ui/react";
 import dataset from "../dataset.csv";
 import Table from "./lib/Table/Table";
 import theme from "./lib/theme";
-import TableProps, { TableRowData } from "./lib/Table/TableProps";
-import StringFilter, { FilterResult } from "./app/StringFilter";
-
-function isValidNumber(str: string) {
-  return !Number.isNaN(parseFloat(str));
-}
+import StringFilter from "./app/components/StringFilter";
+import useRowFilters from "./app/hooks/useRowFilters";
 
 function App() {
   const data = dataset as Record<string, string>[];
-  const headers: TableProps["headers"] = Object.keys(data[0]).map(
-    (columnName) => ({
-      key: columnName,
-      label: columnName,
-    }),
-  );
 
-  const [filters, setFilters] = useState<FilterResult>();
-
-  const rows = data
-    .filter((inputRow) => {
-      return (
-        !filters ||
-        filters?.filters.every(
-          (filter) => String(inputRow[filter.column]) === filter.value,
-        )
-      );
-    })
-    .map((inputRow) => {
-      const row: TableRowData = {};
-
-      Object.entries(inputRow).forEach(([key, val]) => {
-        row[key] = {
-          label: val,
-          isNumeric: isValidNumber(val),
-        };
-      });
-
-      return row;
-    });
+  const {
+    filteredRows,
+    columns: headers,
+    selectedParser,
+    parsers,
+    setParser,
+    setFilters,
+  } = useRowFilters(data);
 
   return (
     <ChakraBaseProvider theme={theme}>
@@ -50,15 +25,47 @@ function App() {
         display="flex"
         flexDir="column"
         gap="1rem"
-        style={{ padding: "20px", height: "500px" }}
+        style={{ padding: "20px" }}
       >
-        <Box display="flex" flexDir="column" gap="1rem">
+        <Box maxW="100%">
           <Table
             defaultVisibleColumns={headers.map((header) => header.key)}
             expandableColumn="Fun Facts"
-            filter={<StringFilter onSearch={setFilters} />}
+            filter={
+              <Box
+                alignItems="flex-start"
+                display="flex"
+                gap="0.5rem"
+                width="100%"
+              >
+                <StringFilter
+                  onSearch={setFilters}
+                  parser={parsers[selectedParser]}
+                />
+                <Checkbox
+                  colorScheme="yellow"
+                  isChecked={selectedParser === "nlp"}
+                  onChange={() =>
+                    setParser(
+                      selectedParser === "expression" ? "nlp" : "expression",
+                    )
+                  }
+                  defaultChecked
+                  paddingTop="0.5rem"
+                  whiteSpace="nowrap"
+                >
+                  Use NLP
+                </Checkbox>
+                <Divider
+                  color="gray.200"
+                  orientation="vertical"
+                  height="2.5rem"
+                  borderWidth="1px"
+                />
+              </Box>
+            }
             headers={headers}
-            rows={rows}
+            rows={filteredRows}
             style={{ width: "120rem" }}
           />
         </Box>
