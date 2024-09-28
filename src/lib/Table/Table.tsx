@@ -8,6 +8,7 @@ import ColumnRevealer from "./ColumnRevealer";
 function Table({
   defaultVisibleColumns,
   expandableColumn,
+  filter,
   headers,
   rows,
   style = {},
@@ -30,12 +31,20 @@ function Table({
 
   return (
     <>
-      <Box alignSelf="flex-end">
-        <ColumnRevealer
-          columns={headers}
-          setVisibleColumns={setVisibleColumns}
-          visibleColumns={visibleColumns}
-        />
+      <Box
+        alignItems="flex-start"
+        display="flex"
+        flexDir="row-reverse"
+        gap="1rem"
+      >
+        <Box paddingTop="0.2rem">
+          <ColumnRevealer
+            columns={headers}
+            setVisibleColumns={setVisibleColumns}
+            visibleColumns={visibleColumns}
+          />
+        </Box>
+        {filter}
       </Box>
       <Box
         as="table"

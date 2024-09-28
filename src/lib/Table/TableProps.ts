@@ -1,4 +1,5 @@
 import { TableProps as ChakraTableProps } from "@chakra-ui/react";
+import { ReactNode } from "react";
 
 export type TableRowData = Record<
   string,
@@ -17,6 +18,7 @@ type TableProps = {
   }[];
   defaultVisibleColumns: string[];
   expandableColumn?: string;
+  filter?: ReactNode;
   rows: TableRowData[];
   style?: TableStyleProps;
 };
